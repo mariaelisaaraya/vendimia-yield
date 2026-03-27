@@ -4,7 +4,7 @@ export interface ProtocolInfo {
   id: Protocol;
   name: string;
   description: string;
-  apy: number | null; // null = loading / unavailable
+  apy: number | null;
   color: string;
 }
 
@@ -34,7 +34,6 @@ export const PROTOCOLS: ProtocolInfo[] = [
 
 export const YIELD_ROUTER_ADDRESS = process.env.NEXT_PUBLIC_YIELD_ROUTER ?? "";
 
-// Maps our protocol id to the enum index in YieldRouter.sol
 export const PROTOCOL_INDEX: Record<Protocol, number> = {
   tropykus: 0,
   sovryn: 1,

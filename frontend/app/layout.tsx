@@ -1,6 +1,33 @@
 import type { Metadata } from "next";
-import { DM_Serif_Display, DM_Mono } from "next/font/google";
+import { DM_Mono, DM_Serif_Display } from "next/font/google";
 import "./globals.css";
+import { cn } from "@/lib/utils";
+import '@rainbow-me/rainbowkit/styles.css';
+import {
+  getDefaultConfig,
+  RainbowKitProvider,
+} from '@rainbow-me/rainbowkit';
+import { WagmiProvider } from 'wagmi';
+import {
+  mainnet,
+  polygon,
+  optimism,
+  arbitrum,
+  base,
+} from 'wagmi/chains';
+import {
+  QueryClientProvider,
+  QueryClient,
+} from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
+
+const config = getDefaultConfig({
+  appName: 'Vendimia Yield',
+  projectId: 'vendimia-yield',
+  chains: [mainnet, polygon, optimism, arbitrum, base],
+  ssr: true, // If your dApp uses server side rendering (SSR)
+});
 
 const dmSerif = DM_Serif_Display({
   weight: "400",
@@ -24,19 +51,23 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
-    <html lang="es" className={`${dmSerif.variable} ${dmMono.variable}`}>
-      <body
-        style={{
-          fontFamily: "var(--font-dm-mono), monospace",
-          background: "#080B0F",
-          color: "#F0EDE6",
-        }}
-      >
-        {children}
+    <html
+      lang="es"
+      suppressHydrationWarning
+      className={cn("dark antialiased", dmSerif.variable, dmMono.variable)}
+    >
+      <body>
+        <WagmiProvider config={config}>
+          <QueryClientProvider client={queryClient}>
+            <RainbowKitProvider>
+              {children}
+            </RainbowKitProvider>
+          </QueryClientProvider>
+        </WagmiProvider>
       </body>
     </html>
   );

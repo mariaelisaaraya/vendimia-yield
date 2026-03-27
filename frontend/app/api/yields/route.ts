@@ -1,8 +1,5 @@
 import { NextResponse } from "next/server";
 
-// TODO: integrar con APIs reales de cada protocolo para obtener APYs on-chain
-// Por ahora retorna valores mock para desarrollo
-
 export const dynamic = "force-dynamic";
 
 export async function GET() {

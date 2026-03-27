@@ -30,3 +30,5 @@ npm-debug.log*
 # Next.js (para cuando agreguemos frontend)
 .next/
 out/
+
+frontend_old
