@@ -10,16 +10,20 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import {
-  WalletDepositButton,
-  WalletHeaderButton,
-} from "@/components/wallet-connect-controls";
+import { DepositCta } from "@/components/deposit-cta";
+import { WalletHeaderButton } from "@/components/wallet-connect-controls";
 import { cn } from "@/lib/utils";
+import { applyYieldsToProtocols, type YieldsApiResponse } from "@/lib/yields-api-types";
 import {
   PROTOCOLS,
   type Protocol,
   type ProtocolInfo,
 } from "@/lib/protocols";
+
+function formatApyPct(n: number): string {
+  if (n > 0 && n < 0.01) return n.toFixed(4);
+  return n.toFixed(2);
+}
 
 function useCountUp(target: number | null, duration = 1000) {
   const [value, setValue] = useState(0);
@@ -75,10 +79,8 @@ export default function HomePage() {
       try {
         const res = await fetch("/api/yields");
         if (!res.ok) return;
-        const data = (await res.json()) as Record<string, number>;
-        setProtocols((prev) =>
-          prev.map((p) => ({ ...p, apy: data[p.id] ?? null }))
-        );
+        const data = (await res.json()) as YieldsApiResponse;
+        setProtocols((prev) => applyYieldsToProtocols(prev, data));
       } catch {
         /* cards show "—" when apy is null */
       }
@@ -116,7 +118,7 @@ export default function HomePage() {
 
   const depositLabel =
     activeProto?.apy != null
-      ? `Depositar en ${activeProto.name} — ${activeProto.apy.toFixed(2)}% APY`
+      ? `Depositar en ${activeProto.name} — ${formatApyPct(activeProto.apy)}% APY`
       : `Depositar en ${activeProto?.name ?? ""}`;
 
   return (
@@ -178,7 +180,9 @@ export default function HomePage() {
               </CardHeader>
               <CardContent className="pt-0">
                 <p className="font-heading text-5xl leading-none">
-                  {apyDisplay !== null ? `${apyDisplay.toFixed(2)}%` : "—"}
+                  {apyDisplay !== null
+                    ? `${formatApyPct(apyDisplay)}%`
+                    : "—"}
                 </p>
                 <p className="mt-2 font-mono text-[11px] text-muted-foreground">
                   APY actual
@@ -225,7 +229,11 @@ export default function HomePage() {
         )}
 
         {activeProtocol && activeProto && (
-          <WalletDepositButton depositLabel={depositLabel} />
+          <DepositCta
+            protocol={activeProtocol}
+            amountEth={amount}
+            depositLabel={depositLabel}
+          />
         )}
       </section>
     </main>
