@@ -78,7 +78,9 @@ export default function HomePage() {
     Number.isFinite(btcPrice)
       ? amountBtc * btcPrice
       : null;
+  const showRbtcMonthlyUsd = activeProto?.id !== "moneyonchain";
   const monthlyYieldUsd =
+    showRbtcMonthlyUsd &&
     principalUsd != null &&
     activeProto?.apy != null &&
     activeProto.apy > 0
@@ -226,16 +228,30 @@ export default function HomePage() {
 
         {activeProto && (
           <>
-            <p className="mb-2 font-mono text-xs text-muted-foreground">
-              Con {activeProto.name} ganarías
-            </p>
-            <p className="mb-8 font-heading text-3xl text-[#00d37f] md:text-4xl">
-              $
-              {monthlyYieldUsd && monthlyYieldUsd > 0
-                ? formatUsd(monthlyYieldUsd)
-                : "0.00"}{" "}
-              por mes
-            </p>
+            {activeProto.id === "moneyonchain" ? (
+              <>
+                <p className="mb-2 font-mono text-xs text-muted-foreground">
+                  {activeProto.name}
+                </p>
+                <p className="mb-8 max-w-xl font-mono text-sm leading-relaxed text-muted-foreground md:text-[15px]">
+                  El APY mostrado corresponde a mercados DOC (kDOC / iDOC), no a préstamo directo
+                  en RBTC. No estimamos ganancia mensual en USD a partir del monto en RBTC.
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="mb-2 font-mono text-xs text-muted-foreground">
+                  Con {activeProto.name} ganarías
+                </p>
+                <p className="mb-8 font-heading text-3xl text-[#00d37f] md:text-4xl">
+                  $
+                  {monthlyYieldUsd && monthlyYieldUsd > 0
+                    ? formatUsd(monthlyYieldUsd)
+                    : "0.00"}{" "}
+                  por mes
+                </p>
+              </>
+            )}
           </>
         )}
 
