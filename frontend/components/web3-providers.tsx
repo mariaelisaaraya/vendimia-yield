@@ -7,9 +7,12 @@ import {
   darkTheme,
   getDefaultConfig,
 } from "@rainbow-me/rainbowkit";
-import { WagmiProvider } from "wagmi";
+import { WagmiProvider, cookieStorage, createStorage } from "wagmi";
 
 import { rskChain } from "@/lib/chain";
+import { walletConnectKeyValueStorage } from "@/lib/walletconnect-kv-storage";
+
+const storage = createStorage({ storage: cookieStorage });
 
 const config = getDefaultConfig({
   appName: "Vendimia Yield",
@@ -17,6 +20,10 @@ const config = getDefaultConfig({
     process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID ?? "YOUR_PROJECT_ID",
   chains: [rskChain],
   ssr: true,
+  storage,
+  walletConnectParameters: {
+    storage: walletConnectKeyValueStorage,
+  },
 });
 
 export function Web3Providers({ children }: { children: React.ReactNode }) {

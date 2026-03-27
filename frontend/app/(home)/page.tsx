@@ -11,6 +11,7 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { monthlyUsdYieldFromApy } from "@/lib/monthly-yield-usd";
 import { cn } from "@/lib/utils";
 import {
   PROTOCOLS,
@@ -62,9 +63,19 @@ export default function HomePage() {
   const activeProtocol = selected ?? winner?.id ?? null;
   const activeProto = protocols.find((p) => p.id === activeProtocol);
 
+  const amountBtc = parseFloat(amount);
+  const principalUsd =
+    Number.isFinite(amountBtc) &&
+    amountBtc > 0 &&
+    btcPrice != null &&
+    Number.isFinite(btcPrice)
+      ? amountBtc * btcPrice
+      : null;
   const monthlyYieldUsd =
-    activeProto?.apy && amount && btcPrice
-      ? (parseFloat(amount) * btcPrice * (activeProto.apy / 100)) / 12
+    principalUsd != null &&
+    activeProto?.apy != null &&
+    activeProto.apy > 0
+      ? monthlyUsdYieldFromApy(principalUsd, activeProto.apy)
       : null;
 
   useEffect(() => {
